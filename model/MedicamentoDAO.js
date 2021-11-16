@@ -8,7 +8,8 @@ const medicamentoschema = conection.Schema({
     nombre_comercial: String,
     descripcion: String,
     tipo: String,
-    duracion: Number
+    duracion: Number,
+    foto: String
 }, {
     collection: "Medicamentos",
     VersionKey: false

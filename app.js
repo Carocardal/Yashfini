@@ -1,19 +1,16 @@
-//el archivo app es como el main, es el que debe ejecutar los metodos post, put... del frontend(vista) 
-//y se comunica con el controlador
 const { request, response } = require("express");
-const express = require("express"); //importa la libreria express, se guarda en una variable y se hace la instancia, todo en la misma linea
-//const cors = require("cors"); //esta libreria se necesita para frontend
-//llamar al controlador:
+const express = require("express");
+
 const usuarioscrtl = require('./controller/UsuarioControl');
 const citascrtl = require('./controller/CitaControl');
 const formulascrtl = require('./controller/FormulaControl');
 const consultorioscrtl = require('./controller/ConsultorioControl');
 const medicamentoscrtl = require('./controller/MedicamentoControl');
+const recipesctrl = require('./controller/RecipeControl');
 
-const app = express(); //se crea un metodo app de tipo express 
-//para usar todos los metodos que se encuentran en la libreria express
+const app = express();
 app.use(express.json());
-//app.use(cors);
+
 
 app.use((_, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -285,6 +282,53 @@ app.put('/api/consultorios', async(request, response) => {
     }
 });
 /************************************FIN MEDICAMENTO ***************************************************/
+/************************************INICIO RECIPES ***************************************************/
+app.get('/api/recipes', async(request, response) => {
+    const recipe = await recipesctrl.listar();
+    try {
+        await recipesctrl.listar();
+        response.status(200).json(recipe);
+    } catch (error) {
+        console.log("Hubo un error al listar la tabla: " + error);
+        response.status(400).send("Hubo un error al listar la tabla: " + error);
+    }
+});
+app.post('/api/recipes', async(request, response) => {
+    const recipe = request.body;
+    try {
+        await recipesctrl.insertar(recipe); //este es el que se va a encargar de insertar, el await es para que espere mientrar se abre
+        console.log("recipe registrado exitosamente");
+        //response.status(201).json(recipe);
+        response.status(201).send("recipe registrado exitosamente.");
+    } catch (error) {
+        console.log("Hubo un error al insertar el recipe: " + error);
+        response.status(400).send("Hubo un error al insertar el recipe: " + error);
+    }
+});
+app.delete('/api/recipes/:id', async(request, response) => {
+    const id = request.params.id;
+    try {
+        await recipesctrl.eliminar(id);
+        console.log("Registro eliminado exitosamente");
+        response.status(200).send("Registro eliminado exitosamente.");
+    } catch (error) {
+        console.log("Hubo un error al eliminar: " + error);
+        response.status(400).send("Hubo un error al eliminar: " + error);
+    }
+});
+app.put('/api/recipes', async(request, response) => {
+    const recipe = request.body;
+    try {
+        await recipesctrl.actualizar(recipe); //este es el que se va a encargar de insertar, el await es para que espere mientrar se abre
+        console.log("recipe actualizado exitosamente");
+        response.status(200).send("recipe actualizado exitosamente.");
+    } catch (error) {
+        console.log("Hubo un error actualizando la recipe: " + error);
+        response.status(400).send("Hubo un erroractualizando la recipe: " + error);
+    }
+});
+/************************************FIN RECIPES ***************************************************/
+
 app.listen(1800, () => {
     console.log("servidor escuchando");
 });
